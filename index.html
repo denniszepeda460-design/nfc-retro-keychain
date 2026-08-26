@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>NFC Retro Game</title>
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
@@ -45,6 +45,15 @@
 
     <!-- Este script es el que realmente arranca el emulador -->
     <script src="https://cdn.emulatorjs.org/stable/data/loader.js"></script>
+
+    <!-- Red de seguridad extra para celulares: si el usuario gira la
+         pantalla, esto obliga al emulador a recalcular su tamaño en vez
+         de quedarse con las medidas viejas de la orientación anterior. -->
+    <script>
+        window.addEventListener('orientationchange', () => {
+            window.dispatchEvent(new Event('resize'));
+        });
+    </script>
 
     <!-- Service worker: cachea el emulador y la ROM para que la próxima vez
          cargue casi instantáneo, y para que Chrome pueda "instalar" esta
