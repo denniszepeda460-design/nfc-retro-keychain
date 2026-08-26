@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFC Retro Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Contenedor donde EmulatorJS inyectará el juego -->
+    <div id="game"></div>
+
+    <!-- Configuración del Emulador -->
+    <script>
+        EJS_player = '#game';
+        EJS_core = 'gba'; 
+        
+        EJS_gameName = 'Pokémon Esmeralda'; // El título que el usuario verá al inicio
+        EJS_color = '#4caf50'; // Color verde esmeralda para la interfaz
+        EJS_startOnLoaded = true; 
+        
+        // Ruta al servidor en la nube de EmulatorJS
+        EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
+        
+        // La ruta exacta a tu ROM
+        EJS_gameUrl = 'roms/pokemon_emerald.gba'; 
+    </script>
+
+    <!-- ESTA LÍNEA FALTABA: sin ella, las variables EJS_* de arriba
+         quedan definidas pero nunca se usan, y el emulador no arranca -->
+    <script src="https://cdn.emulatorjs.org/stable/data/loader.js"></script>
+</body>
+</html>

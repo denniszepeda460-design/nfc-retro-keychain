@@ -1,0 +1,16 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #000;
+    overflow: hidden; /* Evita que el usuario haga scroll accidentalmente */
+}
+
+/* EmulatorJS mide el tamaño real de este contenedor para dibujar
+   el canvas del juego. Sin esto, #game puede quedar con altura 0
+   porque un div vacío no tiene altura propia. */
+#game {
+    width: 100%;
+    height: 100%;
+}
