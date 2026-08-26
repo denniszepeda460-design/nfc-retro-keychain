@@ -12,6 +12,28 @@
     <!-- Contenedor donde EmulatorJS inyectará el juego -->
     <div id="game"></div>
 
+    <!-- Ajusta la variable --vh con la altura REAL visible (sin la barra de
+         direcciones del navegador). Esto es más confiable que 100vh/100dvh
+         solos en Android (Brave, Chrome, etc.), que es la causa de que los
+         controles (cruceta y botones) aparecieran cortados abajo. -->
+    <script>
+        function setRealVH() {
+            const vh = (window.visualViewport ? window.visualViewport.height : window.innerHeight) * 0.01;
+            document.documentElement.style.setProperty('--vh', vh + 'px');
+        }
+        setRealVH();
+        window.addEventListener('resize', setRealVH);
+        window.addEventListener('orientationchange', () => {
+            setTimeout(() => {
+                setRealVH();
+                window.dispatchEvent(new Event('resize'));
+            }, 300);
+        });
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', setRealVH);
+        }
+    </script>
+
     <!-- Configuración del Emulador -->
     <script>
         // Lee los parámetros de la URL para saber qué juego/consola cargar.
@@ -24,7 +46,15 @@
         EJS_core = params.get('core') || 'gba';
         EJS_gameName = params.get('name') || 'Pokémon Esmeralda';
         EJS_color = '#4caf50'; // Color verde esmeralda para la interfaz
-        EJS_startOnLoaded = true;
+
+        // IMPORTANTE: NO usamos EJS_startOnLoaded. Al forzar el arranque
+        // automático, el navegador bloquea el audio (política de autoplay)
+        // y el emulador se queda "atorado" hasta que el usuario hace clic
+        // en cualquier parte varias veces sin querer -- eso es justo el bug
+        // que describiste (PC: varios clics; celular: nunca arranca).
+        // Dejando que EmulatorJS muestre su propio botón "Play" nativo, un
+        // solo toque arranca el juego Y desbloquea el audio correctamente
+        // en ambas plataformas.
 
         // Ruta al servidor en la nube de EmulatorJS
         EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
@@ -41,19 +71,18 @@
         EJS_gameUrl = cacheBuster
             ? `${romPath}${romPath.includes('?') ? '&' : '?'}v=${cacheBuster}`
             : romPath;
+
+        // Una vez que el juego arranca de verdad, forzamos un recálculo de
+        // tamaño con la altura real -- así los controles táctiles quedan
+        // bien posicionados incluso si la barra del navegador se movió
+        // mientras cargaba.
+        EJS_onGameStart = () => {
+            setTimeout(() => window.dispatchEvent(new Event('resize')), 150);
+        };
     </script>
 
     <!-- Este script es el que realmente arranca el emulador -->
     <script src="https://cdn.emulatorjs.org/stable/data/loader.js"></script>
-
-    <!-- Red de seguridad extra para celulares: si el usuario gira la
-         pantalla, esto obliga al emulador a recalcular su tamaño en vez
-         de quedarse con las medidas viejas de la orientación anterior. -->
-    <script>
-        window.addEventListener('orientationchange', () => {
-            window.dispatchEvent(new Event('resize'));
-        });
-    </script>
 
     <!-- Service worker: cachea el emulador y la ROM para que la próxima vez
          cargue casi instantáneo, y para que Chrome pueda "instalar" esta

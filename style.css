@@ -14,21 +14,24 @@ html, body {
 
     /* Altura del viewport, de más compatible a más correcta:
        1) 100vh: línea base para navegadores viejos.
-       2) -webkit-fill-available: arregla Safari iOS viejo, donde 100vh
-          mide como si la barra de direcciones no existiera.
-       3) 100dvh ("dynamic viewport height"): la solución moderna. Se
-          recalcula solo cuando la barra de direcciones del navegador
-          aparece o desaparece, así el alto real SIEMPRE es el visible
-          -- incluso en el primer instante de carga, que es cuando
-          EmulatorJS mide el contenedor para crear el canvas del juego. */
+       2) -webkit-fill-available: arregla Safari iOS viejo.
+       3) calc(var(--vh) * 100): calculada en JS con la altura REAL visible
+          (sin la barra de direcciones). Es la más confiable en Android
+          (Brave, Chrome, Samsung Internet), donde 100dvh a veces no se
+          actualiza bien y dejaba los controles del emulador cortados
+          abajo de la pantalla.
+       4) 100dvh: mejora progresiva para navegadores modernos que sí la
+          soportan bien. */
     height: 100vh;
     height: -webkit-fill-available;
+    height: calc(var(--vh, 1vh) * 100);
     height: 100dvh;
 }
 
 /* EmulatorJS mide el tamaño real de este contenedor para dibujar
-   el canvas del juego. Sin esto, #game puede quedar con altura 0
-   porque un div vacío no tiene altura propia. */
+   el canvas del juego y posicionar la cruceta/botones táctiles.
+   Sin esto, #game puede quedar con altura 0 porque un div vacío no
+   tiene altura propia. */
 #game {
     width: 100%;
     height: 100%;
