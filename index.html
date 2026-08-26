@@ -30,7 +30,17 @@
         EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
 
         // Ruta a la ROM (por defecto, Pokémon Esmeralda)
-        EJS_gameUrl = params.get('rom') || 'roms/pokemon_emerald.gba';
+        const romPath = params.get('rom') || 'roms/pokemon_emerald.gba';
+
+        // "Cache buster" opcional: si el tag incluye &v=1, &v=2, etc.,
+        // se agrega como ?v=1 al final de la ROM. Esto sirve para forzar
+        // que el CDN de GitHub Pages traiga el archivo fresco en vez de
+        // servir una versión (o un 404) que haya quedado en caché de
+        // cuando el archivo todavía no existía.
+        const cacheBuster = params.get('v');
+        EJS_gameUrl = cacheBuster
+            ? `${romPath}${romPath.includes('?') ? '&' : '?'}v=${cacheBuster}`
+            : romPath;
     </script>
 
     <!-- Este script es el que realmente arranca el emulador -->
